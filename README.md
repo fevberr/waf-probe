@@ -1,57 +1,138 @@
 <img src="https://p16-tiktok-dm-sticker-sign-sg.ibyteimg.com/tos-alisg-i-dhq7zx4c1p-sg/d179a29e560642bba3707aa2ec9babd8~tplv-dhq7zx4c1p-full.awebp?rk3s=00edd399&x-expires=1792029789&x-signature=qrJJe26DGlzonOoaKdczYDcF0BE%3D" alt="RAHHHH">
 
-### RAHHHH
-**WAF fingerprinter + bypass suggester.**
-Cloudflare · Akamai · AWS WAF · Imperva · F5 · ModSecurity — no exploits, markers only.
+# waf-probe
+
+**Point it at a URL. It tells you which WAF is in front of it.**
+
+`waf-probe` sends one request, inspects the response headers, cookies, and
+body, and matches them against a database of WAF fingerprints. It prints
+which WAF it thinks you are behind and the evidence for that call.
+
+No exploits, no payloads, no attacks 
+—
+ just identification. It is a
+fingerprinting tool, not a scanner.
+
+Supported WAFs: Cloudflare, Akamai, AWS WAF / CloudFront, Imperva / Incapsula,
+F5 BIG-IP ASM, ModSecurity / CRS, Sucuri, Barracuda, Fortinet FortiWeb,
+Wallarm, Azure Front Door, Google Cloud Armor, Fastly, Cloudflare Turnstile.
 
 ---
 
-**Stack**
-
-<p>
-  <img src="https://cdn.simpleicons.org/rust" alt="Rust" width="20">
-  <img src="https://cdn.simpleicons.org/go" alt="Go" width="20">
-  <img src="https://cdn.simpleicons.org/python" alt="Python" width="20">
-  <img src="https://cdn.simpleicons.org/yaml" alt="YAML" width="20">
-</p>
-
----
-
-**Author** — [fevberr](https://github.com/fevberr) *(super coolz guy btw)*
-
----
-
-## Install
+## Quick start
 
 ```powershell
 git clone https://github.com/fevberr/waf-probe.git
 cd waf-probe
 cargo build --release
+.\target\release\waf-probe.exe scan https://example.com
+```
+
+That is it. One command to build, one to run.
+
+---
+
+## What the output looks like
+
+```
+waf-probe scan: https://example.com
+HTTP status: 200 OK
+
+Matched 1 signature(s):
+
+  [HIT] Cloudflare (weight 3)
+        - header server: cloudflare
+        - header cf-ray: a3b9b210dde7dc77-GUA
+        - header cf-cache-status: HIT
+```
+
+Each hit lists the WAF name, a weight (how confident the match is), and the
+exact headers, cookies, or body text that triggered it. If nothing matches:
+
+```
+No known WAF signature matched.
 ```
 
 ---
 
-## Use
+## Usage
+
+```
+waf-probe scan <url> [options]
+```
+
+| Option | Description |
+| --- | --- |
+| `--signatures <path>` | Use a different signature file (default: `signatures/00.yaml`) |
+| `--json` | Print machine-readable JSON instead of a text report |
+
+**Examples**
 
 ```powershell
+# Basic scan
 .\target\release\waf-probe.exe scan https://example.com
-.\target\release\waf-probe.exe test-bypass https://your-app.example/search --param q --yes-i-own-this
+
+# JSON for scripting
+.\target\release\waf-probe.exe scan https://example.com --json
+
+# Custom signature database
+.\target\release\waf-probe.exe scan https://example.com --signatures .\signatures\00.yaml
 ```
+
+Run from the repo root so the default `signatures/00.yaml` is found.
 
 ---
 
-## Fingerprint DB
+## How detection works
 
-`signatures/00.yaml` — PRs welcome.
+Every signature in `signatures/00.yaml` has four optional parts:
+
+| Field | What it checks |
+| --- | --- |
+| `headers` | Response header name -> regex on its value |
+| `cookies` | Cookie name regex -> regex on its value |
+| `body` | Regex on the response body |
+| `weight` | Confidence score (higher = stronger signal) |
+
+A signature matches if **any** of its header, cookie, or body rules match.
+Hits are sorted by weight, so the most confident match is first.
+
+---
+
+## Adding a signature
+
+Open `signatures/00.yaml` and add an entry. Example:
 
 ```yaml
-- name: Cloudflare
+- name: My WAF
   weight: 3
   headers:
-    server: '(?i)^cloudflare$'
-    cf-ray: '.+'
-  body: '(?i)(cloudflare|Error 1020|Ray ID)'
+    server: '(?i)^my-waf$'
+    x-my-waf-id: '.+'
+  cookies:
+    'my_waf_.*': '.+'
+  body: '(?i)(blocked by My WAF)'
 ```
+
+Only `name` is required; `weight` defaults to 1. Pull requests welcome.
+
+---
+
+## FAQ
+
+**Does it attack the target?**
+No. It sends a single normal GET request and reads the response.
+
+**Why do I need to run it from the repo root?**
+The default signature path is `signatures/00.yaml`, relative to the current
+directory. Use `--signatures <path>` to point elsewhere.
+
+**Why did nothing match?**
+Either there is no WAF in front of the site, or it hides its headers. Add a
+signature if you spot a pattern.
+
+**Is it fast?**
+One HTTP request plus regex matching. Milliseconds.
 
 ---
 
@@ -85,55 +166,12 @@ SOFTWARE.
 
 ---
 
-## Usage (expanded)
-
-Run ``scan`` from the repo root so the default ``signatures/00.yaml`` resolves.
-
-**Options**
-
-| Flag | Description |
-| --- | --- |
-| ``--signatures <path>`` | Use a different signature file (default: ``signatures/00.yaml``) |
-| ``--json`` | Emit machine-readable JSON instead of a text report |
-
-**Examples**
-
-```powershell
-# Basic scan
-.\target\release\waf-probe.exe scan https://example.com
-
-# JSON output for scripting
-.\target\release\waf-probe.exe scan https://example.com --json
-
-# Custom signature file
-.\target\release\waf-probe.exe scan https://example.com --signatures .\signatures\00.yaml
-```
-
-**Sample output**
-
-```
-waf-probe scan: https://example.com
-HTTP status: 200 OK
-
-Matched 1 signature(s):
-
-  [HIT] Cloudflare (weight 3)
-        - header server: cloudflare
-        - header cf-ray: a3b9b210dde7dc77-GUA
-        - header cf-cache-status: HIT
-```
-
----
-
 ## Changelog
 
 ### 0.1.0 - 2026-09-15
 - Initial working release.
-- ``scan <url>`` command: fetches a URL and matches the response against WAF
-  signatures in ``signatures/00.yaml`` (headers, cookies, body).
-- Signatures: Cloudflare, Akamai, AWS WAF/CloudFront, Imperva/Incapsula,
-  F5 BIG-IP ASM, ModSecurity/CRS, Sucuri, Barracuda, Fortinet FortiWeb,
-  Wallarm, Azure Front Door, Google Cloud Armor, Fastly, Cloudflare Turnstile.
-- ``--json`` output for scripting.
-- ``--signatures <path>`` to override the signature file.
+- `scan <url>` command: fetches a URL and matches the response against WAF
+  signatures in `signatures/00.yaml` (headers, cookies, body).
+- `--json` output for scripting.
+- `--signatures <path>` to override the signature file.
 - Weights per signature; hits sorted by weight.
