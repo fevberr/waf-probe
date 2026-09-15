@@ -55,12 +55,6 @@ cargo build --release
 
 ---
 
-## Legal
-
-Authorized security testing only. `test-bypass` requires `--yes-i-own-this`.
-
----
-
 ## License
 
 MIT © 2026 fevberr
