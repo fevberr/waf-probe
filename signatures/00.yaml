@@ -1,0 +1,111 @@
+version: 1
+signatures:
+  - name: Cloudflare
+    weight: 3
+    headers:
+      server: '(?i)^cloudflare$'
+      cf-ray: '.+'
+      cf-cache-status: '.+'
+    cookies:
+      __cfduid: '.+'
+      __cf_bm: '.+'
+      cf_clearance: '.+'
+    body: '(?i)(cloudflare|Attention Required|Error 1020|Ray ID)'
+  - name: Akamai
+    weight: 3
+    headers:
+      server: '(?i)AkamaiGHost'
+      x-akamai-transformed: '.+'
+      akamai-grn: '.+'
+    cookies:
+      ak_bmsc: '.+'
+      bm_sv: '.+'
+      bm_sz: '.+'
+    body: '(?i)(Access Denied.*Akamai|Reference #\d+\.)'
+  - name: AWS WAF / CloudFront
+    weight: 2
+    headers:
+      x-amzn-requestid: '.+'
+      x-amz-cf-id: '.+'
+      server: '(?i)CloudFront'
+    cookies:
+      AWSALB: '.+'
+      AWSALBCORS: '.+'
+      aws-waf-token: '.+'
+    body: '(?i)(Request blocked|AWS WAF|403 ERROR)'
+  - name: Imperva / Incapsula
+    weight: 3
+    headers:
+      x-cdn: '(?i)Incapsula'
+      x-iinfo: '.+'
+    cookies:
+      'incap_ses_.*': '.+'
+      'visid_incap_.*': '.+'
+      'nlbi_.*': '.+'
+    body: '(?i)(Incapsula incident ID|_Incapsula_Resource|Request unsuccessful)'
+  - name: F5 BIG-IP ASM
+    weight: 3
+    headers:
+      server: '(?i)BigIP'
+      x-wa-info: '.+'
+    cookies:
+      'TS[a-f0-9]{6,}': '.+'
+      'BIGipServer.*': '.+'
+    body: '(?i)(The requested URL was rejected|consult with your administrator|support ID)'
+  - name: ModSecurity / CRS
+    weight: 3
+    body: '(?i)(ModSecurity|Mod_Security|Not Acceptable)'
+  - name: Sucuri
+    weight: 3
+    headers:
+      x-sucuri-id: '.+'
+      server: '(?i)Sucuri'
+    cookies:
+      'sucuri_cloudproxy_uuid_.*': '.+'
+    body: '(?i)(Sucuri WebSite Firewall|Access Denied - Sucuri)'
+  - name: Barracuda
+    weight: 2
+    headers:
+      server: '(?i)Barracuda'
+    cookies:
+      barra_counter_session: '.+'
+    body: '(?i)(Barracuda|You have been blocked)'
+  - name: Fortinet FortiWeb
+    weight: 3
+    headers:
+      server: '(?i)FortiWeb'
+    cookies:
+      FORTIWAFSID: '.+'
+    body: '(?i)(FortiWeb|fgd_icon)'
+  - name: Wallarm
+    weight: 3
+    headers:
+      server: '(?i)nginx-wallarm'
+      x-wallarm-waf-node: '.+'
+    body: '(?i)(Request blocked by Wallarm)'
+  - name: Azure Front Door
+    weight: 2
+    headers:
+      x-azure-ref: '.+'
+      server: '(?i)Microsoft-Azure-Application-Gateway'
+    cookies:
+      'ARRAffinity.*': '.+'
+    body: '(?i)(Azure Front Door|Microsoft-Azure-Application-Gateway)'
+  - name: Google Cloud Armor
+    weight: 2
+    headers:
+      server: '(?i)Google Frontend'
+      via: '(?i)google'
+    body: '(?i)(Google Cloud Armor|blocked by Google)'
+  - name: Fastly
+    weight: 2
+    headers:
+      x-served-by: '(?i)cache-.*'
+      x-fastly-request-id: '.+'
+    body: '(?i)(Fastly error|fastly-edge)'
+  - name: Cloudflare Turnstile
+    weight: 4
+    cookies:
+      cf_chl_2: '.+'
+      cf_chl_prog: '.+'
+    body: '(?i)(Just a moment|cf-chl-|Enable JavaScript and cookies to continue)'

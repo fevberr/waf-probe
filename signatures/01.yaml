@@ -1,0 +1,7 @@
+version: 1
+signatures:
+  - {name: Cloudflare, weight: 3, headers: {server: '(?i)^cloudflare$', cf-ray: '.+'}}
+  - {name: Akamai, weight: 3, headers: {server: '(?i)AkamaiGHost'}}
+  - {name: AWS WAF / CloudFront, weight: 2, headers: {x-amz-cf-id: '.+'}}
+  - {name: Imperva / Incapsula, weight: 3, headers: {x-cdn: '(?i)Incapsula'}}
+  - {name: ModSecurity / CRS, weight: 3, body: '(?i)ModSecurity'}

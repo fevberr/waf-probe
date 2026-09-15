@@ -1,0 +1,1 @@
+{"version":1,"target":"https://ms.example","scanned_at":"2026-01-01T00:00:00Z","tool_version":"0.1.0","matches":[{"vendor":"ModSecurity / CRS","score":4,"evidence":["body: ModSecurity"]}],"errors":[]}

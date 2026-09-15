@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "waf-probe signature",
+  "type": "object",
+  "required": ["version", "signatures"],
+  "properties": {
+    "version": { "type": "integer" },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "weight"],
+        "properties": {
+          "name": { "type": "string" },
+          "weight": { "type": "integer" },
+          "headers": { "type": "object" },
+          "cookies": { "type": "object" },
+          "body": { "type": "string" }
+        }
+      }
+    }
+  }
+}

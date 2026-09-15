@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "waf-probe report",
+  "type": "object",
+  "required": ["version", "target", "scanned_at", "matches"],
+  "properties": {
+    "version": { "const": 1 },
+    "target": { "type": "string" },
+    "scanned_at": { "type": "string" },
+    "tool_version": { "type": "string" },
+    "matches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["vendor", "score", "evidence"],
+        "properties": {
+          "vendor": { "type": "string" },
+          "score": { "type": "integer" },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "bypass": { "type": ["array", "null"] },
+    "errors": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,26 @@
+.PHONY: all core batch analyze install test clean
+
+all: core batch analyze
+
+core:
+cd core && cargo build --release
+
+batch:
+cd batch && go build -o ../bin/waf-batch ./cmd/waf-batch
+
+analyze:
+cd analyze && python -m build --wheel --outdir ../bin/
+
+install: all
+mkdir -p bin
+install -m 0755 core/target/release/waf-probe bin/waf-probe
+install -m 0755 batch/waf-batch bin/waf-batch
+
+test:
+cd core && cargo test
+cd batch && go test ./...
+cd analyze && python -m pytest
+
+clean:
+cd core && cargo clean
+rm -rf bin batch/waf-batch

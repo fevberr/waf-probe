@@ -1,0 +1,1 @@
+{"version":1,"target":"https://imp.example","scanned_at":"2026-01-01T00:00:00Z","tool_version":"0.1.0","matches":[{"vendor":"Imperva / Incapsula","score":9,"evidence":["header x-cdn: Incapsula"]}],"errors":[]}

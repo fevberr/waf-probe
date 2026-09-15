@@ -1,0 +1,4 @@
+typer>=0.12
+rich>=13.7
+pydantic>=2.6
+matplotlib>=3.8
