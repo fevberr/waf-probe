@@ -87,14 +87,14 @@ SOFTWARE.
 
 ## Usage (expanded)
 
-Run `scan` from the repo root so the default `signatures/00.yaml` resolves.
+Run ``scan`` from the repo root so the default ``signatures/00.yaml`` resolves.
 
 **Options**
 
 | Flag | Description |
 | --- | --- |
-| `--signatures <path>` | Use a different signature file (default: `signatures/00.yaml`) |
-| `--json` | Emit machine-readable JSON instead of a text report |
+| ``--signatures <path>`` | Use a different signature file (default: ``signatures/00.yaml``) |
+| ``--json`` | Emit machine-readable JSON instead of a text report |
 
 **Examples**
 
@@ -129,11 +129,11 @@ Matched 1 signature(s):
 
 ### 0.1.0 - 2026-09-15
 - Initial working release.
-- `scan <url>` command: fetches a URL and matches the response against WAF
-  signatures in `signatures/00.yaml` (headers, cookies, body).
+- ``scan <url>`` command: fetches a URL and matches the response against WAF
+  signatures in ``signatures/00.yaml`` (headers, cookies, body).
 - Signatures: Cloudflare, Akamai, AWS WAF/CloudFront, Imperva/Incapsula,
   F5 BIG-IP ASM, ModSecurity/CRS, Sucuri, Barracuda, Fortinet FortiWeb,
   Wallarm, Azure Front Door, Google Cloud Armor, Fastly, Cloudflare Turnstile.
-- `--json` output for scripting.
-- `--signatures <path>` to override the signature file.
+- ``--json`` output for scripting.
+- ``--signatures <path>`` to override the signature file.
 - Weights per signature; hits sorted by weight.
