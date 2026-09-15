@@ -1,7 +1,7 @@
 <img src="https://p16-tiktok-dm-sticker-sign-sg.ibyteimg.com/tos-alisg-i-dhq7zx4c1p-sg/d179a29e560642bba3707aa2ec9babd8~tplv-dhq7zx4c1p-full.awebp?rk3s=00edd399&x-expires=1792029789&x-signature=qrJJe26DGlzonOoaKdczYDcF0BE%3D" alt="RAHHHH">
 
 ### RAHHHH
-**WAF fingerprinter + bypass suggester.**  
+**WAF fingerprinter + bypass suggester.**
 Cloudflare · Akamai · AWS WAF · Imperva · F5 · ModSecurity — no exploits, markers only.
 
 ---
@@ -25,7 +25,7 @@ Cloudflare · Akamai · AWS WAF · Imperva · F5 · ModSecurity — no exploits,
 
 ```powershell
 git clone https://github.com/fevberr/waf-probe.git
-cd waf-probe\core
+cd waf-probe
 cargo build --release
 ```
 
@@ -82,3 +82,58 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+---
+
+## Usage (expanded)
+
+Run `scan` from the repo root so the default `signatures/00.yaml` resolves.
+
+**Options**
+
+| Flag | Description |
+| --- | --- |
+| `--signatures <path>` | Use a different signature file (default: `signatures/00.yaml`) |
+| `--json` | Emit machine-readable JSON instead of a text report |
+
+**Examples**
+
+```powershell
+# Basic scan
+.\target\release\waf-probe.exe scan https://example.com
+
+# JSON output for scripting
+.\target\release\waf-probe.exe scan https://example.com --json
+
+# Custom signature file
+.\target\release\waf-probe.exe scan https://example.com --signatures .\signatures\00.yaml
+```
+
+**Sample output**
+
+```
+waf-probe scan: https://example.com
+HTTP status: 200 OK
+
+Matched 1 signature(s):
+
+  [HIT] Cloudflare (weight 3)
+        - header server: cloudflare
+        - header cf-ray: a3b9b210dde7dc77-GUA
+        - header cf-cache-status: HIT
+```
+
+---
+
+## Changelog
+
+### 0.1.0 - 2026-09-15
+- Initial working release.
+- `scan <url>` command: fetches a URL and matches the response against WAF
+  signatures in `signatures/00.yaml` (headers, cookies, body).
+- Signatures: Cloudflare, Akamai, AWS WAF/CloudFront, Imperva/Incapsula,
+  F5 BIG-IP ASM, ModSecurity/CRS, Sucuri, Barracuda, Fortinet FortiWeb,
+  Wallarm, Azure Front Door, Google Cloud Armor, Fastly, Cloudflare Turnstile.
+- `--json` output for scripting.
+- `--signatures <path>` to override the signature file.
+- Weights per signature; hits sorted by weight.
